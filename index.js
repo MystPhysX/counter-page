@@ -31,7 +31,7 @@ function sequenceBreakFound(msg) {
 // If it's neither of those, we've found a sequence break
 function checkNumber(count) {
     if (count <= currentCount && !currentCountFound) {
-        currentCount = true;
+        currentCountFound = true;
         return true;
     } else if (count == currentCount + 1 || currentCount == -1) {
         currentCount = count;
