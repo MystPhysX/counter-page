@@ -31,7 +31,7 @@ function sequenceBreakFound(msg) {
 // If it's neither of those, we've found a sequence break
 function checkNumber(count) {
     if (count <= currentCount && !currentCountFound) {
-        currentCountFound = true;
+        if (count == currentCount) currentCountFound = true;
         return true;
     } else if (count == currentCount + 1 || currentCount == -1) {
         currentCount = count;
@@ -111,7 +111,7 @@ async function fetchToken() {
         count();
         // Set up the repeating count
         if (interval == null) {
-            interval = setInterval(count(), config.app.interval * 1000);
+            interval = setInterval(count, config.app.updateInterval * 1000);
         }
     } else {
         // Didn't get a token
