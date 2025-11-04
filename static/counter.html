@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+    <meta charset="UTF-8" />
+    <title>CountWithEveryone - Counter</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="./style.css" />
+    <body>
+        <h1 id="mainText">The Next Post Should Be Number</h1>
+        <p id="numberText">Waiting for server response...</p>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            const socket = io();
+
+            const header = document.getElementById("mainText");
+            const number = document.getElementById("numberText");
+
+            socket.on("current count", (msg) => {
+                number.innerText = msg;
+            });
+        </script>
+    </body>
+</html>
