@@ -19,6 +19,16 @@ let token = null;
 let currentCountFound = false;
 let clientsConnected = 0;
 
+// Replaces common math symbols with ones mathjs can parse
+function replaceSymbols(str) {
+    let finalStr = str;
+    // replace multiplication
+    finalStr = finalStr.replaceAll(/x|×|⋅/g, "*");
+    // replace division
+    finalStr = finalStr.replaceAll("÷", "/");
+    return finalStr;
+}
+
 // Function that logs and broadcasts if a sequence break was found
 function sequenceBreakFound(msg) {
     console.log(msg);
@@ -73,7 +83,7 @@ async function count() {
                 // Post title is either math or text. Check math first.
                 let res = false;
                 try {
-                    res = evaluate(posts[i].data.title);
+                    res = evaluate(replaceSymbols(posts[i].data.title));
                 } catch {
                     console.error("Could not evaluate string: " + posts[i].data.title);
                     sequenceBreakFound("Potential Break After The Post Number Below. The Next Post Is Either Text Or Incorrect Math.");

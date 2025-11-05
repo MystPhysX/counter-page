@@ -1,4 +1,25 @@
+html, body {
+    height: 100%;
+}
+
 body {
     font-family: Arial, Helvetica, sans-serif;
-    text-align: center;
+    margin: 0;
+}
+
+.box {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#mainText {
+    font-size: 4em;
+}
+
+#numberText {
+    font-size: 1.5em;
+    margin-bottom: 8em;
 }

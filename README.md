@@ -2,7 +2,7 @@
 
 A self-contained NodeJS script that counts through the last 25-100 posts in the
 /r/CountWithEveryone subreddit to see if continuity has been maintained.
-The script retrieves the posts in a configured interval (default: 30).
+The script retrieves the posts in a configured interval (default: 30s).
 
 ## Installation
 1. Install NodeJS 24 or higher if you have not yet.

@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <link rel="stylesheet" href="./style.css" />
     <body>
-        <h1 id="mainText">The Next Post Should Be Number</h1>
-        <p id="numberText">Waiting for server response...</p>
+        <div class="box">
+            <div id="mainText">The Next Post Should Be Number</div>
+            <div id="numberText">Waiting for server response...</div>
+        </div>
         <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
         <script>
             const socket = io();
