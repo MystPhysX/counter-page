@@ -16,10 +16,11 @@ body {
 }
 
 #mainText {
-    font-size: 4em;
+    font-size: 4.5em;
+    margin-bottom: 0.5em;
 }
 
 #numberText {
-    font-size: 1.5em;
-    margin-bottom: 8em;
+    font-size: 3em;
+    margin-bottom: 4em;
 }
