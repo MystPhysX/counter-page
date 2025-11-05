@@ -22,7 +22,8 @@ let clientsConnected = 0;
 // Function that logs and broadcasts if a sequence break was found
 function sequenceBreakFound(msg) {
     console.log(msg);
-    io.emit("current count", msg);
+    io.emit("main text", msg);
+    io.emit("current count", currentCount);
 }
 
 // Function that checks the passed in number against the current count.
@@ -38,7 +39,7 @@ function checkNumber(count) {
         currentCountFound = true;
         return true;
     } else {
-        sequenceBreakFound("Sequence Break After Post " + currentCount);
+        sequenceBreakFound("Sequence Break After Post");
         return false;
     }
 }
@@ -60,7 +61,6 @@ async function count() {
     });
     if (response.status == 200) {
         // Received data successfully, process it
-        console.log("Counting");
         const data = await response.json();
         const posts = data.data.children;
         currentCountFound = false;
@@ -68,14 +68,20 @@ async function count() {
         for (let i = posts.length - 1; i >= 0; i--) {
             // If the post title is an integer, we can just straight up check it
             if (Number.isInteger(posts[i].data.title)) {
-                // We've broken sequence so say so on the website
                 if (!checkNumber(posts[i].data.title)) return;
             } else {
                 // Post title is either math or text. Check math first.
-                let res = evaluate(posts[i].data.title);
+                let res = false;
+                try {
+                    res = evaluate(posts[i].data.title);
+                } catch {
+                    console.error("Could not evaluate string: " + posts[i].data.title);
+                    sequenceBreakFound("Potential Break After The Post Number Below. The Next Post Is Either Text Or Incorrect Math.");
+                    return;
+                }
                 if (!Number.isInteger(res)) {
                     // Post title was not valid math and is probably text.
-                    sequenceBreakFound("Potential Break After Post " + currentCount + " As The Next Post Is Either Text Or Incorrect Math.");
+                    sequenceBreakFound("Potential Break After The Post Number Below. The Next Post Is Either Text Or Incorrect Math.");
                     return;
                 }
                 // Valid math found, check it.
@@ -83,6 +89,7 @@ async function count() {
             }
         }
         // Everything checked out so we can broadcast the current count and continue in peace.
+        io.emit("main text", "The Next Post Should Be Number");
         io.emit("current count", currentCount + 1);
     }
 }
@@ -123,7 +130,6 @@ async function fetchToken() {
 // Get token as part of startup.
 fetchToken();
 
-
 // Default route is to our counter html page
 app.use("/", express.static("./static", { index: "counter.html" }));
 
@@ -131,6 +137,7 @@ app.use("/", express.static("./static", { index: "counter.html" }));
 io.on("connection", (socket) => {
     clientsConnected++;
     console.log("New client connected. Total: " + clientsConnected);
+    socket.emit("main text", "The Next Post Should Be Number");
     socket.emit("current count", currentCount + 1);
     socket.on("disconnect", () => {
         clientsConnected--;

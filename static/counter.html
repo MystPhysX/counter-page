@@ -14,6 +14,9 @@
             const header = document.getElementById("mainText");
             const number = document.getElementById("numberText");
 
+            socket.on("main text", (msg) => {
+                header.innerText = msg;
+            });
             socket.on("current count", (msg) => {
                 number.innerText = msg;
             });
