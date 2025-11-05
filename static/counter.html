@@ -9,7 +9,7 @@
         <p id="numberText">Waiting for server response...</p>
         <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
         <script>
-            const socket = io("https://examples.weatheredstele.com/countwitheveryone/");
+            const socket = io();
 
             const header = document.getElementById("mainText");
             const number = document.getElementById("numberText");

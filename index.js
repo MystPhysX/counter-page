@@ -35,6 +35,7 @@ function checkNumber(count) {
         return true;
     } else if (count == currentCount + 1 || currentCount == -1) {
         currentCount = count;
+        currentCountFound = true;
         return true;
     } else {
         sequenceBreakFound("Sequence Break After Post " + currentCount);
@@ -121,6 +122,7 @@ async function fetchToken() {
 
 // Get token as part of startup.
 fetchToken();
+
 
 // Default route is to our counter html page
 app.use("/", express.static("./static", { index: "counter.html" }));
