@@ -23,5 +23,10 @@ body {
 
 #numberText {
     font-size: 3em;
-    margin-bottom: 4em;
+    margin-bottom: 3em;
+}
+
+#title {
+    font-size: 2em;
+    margin-bottom: 2em;
 }
