@@ -14,7 +14,8 @@ body {
     justify-content: center;
     flex-direction: column;
     text-align: center;
-    width: 90%;
+    padding-left: 10%;
+    padding-right: 10%;
 }
 
 #mainText {
