@@ -8,25 +8,26 @@ body {
 }
 
 .box {
-    height: 100%;
+    margin-top: 2em;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     text-align: center;
+    width: 90%;
 }
 
 #mainText {
-    font-size: 4.5em;
+    font-size: 3.5em;
     margin-bottom: 0.5em;
 }
 
 #numberText {
-    font-size: 3em;
-    margin-bottom: 3em;
+    font-size: 2em;
+    margin-bottom: 2em;
 }
 
 #title {
-    font-size: 2em;
+    font-size: 1em;
     margin-bottom: 2em;
 }

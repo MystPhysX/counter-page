@@ -79,6 +79,8 @@ async function count() {
         currentCountFound = false;
         // Iterate backwards through the array (because it's given to us in descending order)
         for (let i = posts.length - 1; i >= 0; i--) {
+            // Skip if post is a distinguished post like an announcement
+            if (posts[i].data.distinguished) continue;
             // If the post title is an integer, we can just straight up check it
             if (Number.isInteger(posts[i].data.title)) {
                 if (!checkNumber(posts[i].data.title)) return;
