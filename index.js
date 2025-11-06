@@ -152,7 +152,7 @@ io.on("connection", (socket) => {
     clientsConnected++;
     console.log("New client connected. Total: " + clientsConnected);
     socket.emit("main text", currentStatus);
-    socket.emit("current count", currentCount + 1);
+    socket.emit("current count", (currentStatus.charAt(0) != "T") ? currentCount : currentCount + 1);
     socket.on("disconnect", () => {
         clientsConnected--;
         console.log("Client disconnected. Total: " + clientsConnected);
