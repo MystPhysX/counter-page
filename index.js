@@ -14,6 +14,7 @@ const io = new Server(server);
 
 // Variables for count tracking
 let currentCount = -1;
+let currentStatus = "The Next Post Should Be Number";
 let interval = null;
 let token = null;
 let currentCountFound = false;
@@ -31,7 +32,8 @@ function replaceSymbols(str) {
 
 // Function that logs and broadcasts if a sequence break was found
 function sequenceBreakFound(msg) {
-    console.log(msg);
+    console.log(msg + " " + currentCount);
+    currentStatus = msg;
     io.emit("main text", msg);
     io.emit("current count", currentCount);
 }
@@ -100,7 +102,8 @@ async function count() {
             }
         }
         // Everything checked out so we can broadcast the current count and continue in peace.
-        io.emit("main text", "The Next Post Should Be Number");
+        currentStatus = "The Next Post Should Be Number";
+        io.emit("main text", currentStatus);
         io.emit("current count", currentCount + 1);
     }
 }
@@ -148,7 +151,7 @@ app.use("/", express.static("./static", { index: "counter.html" }));
 io.on("connection", (socket) => {
     clientsConnected++;
     console.log("New client connected. Total: " + clientsConnected);
-    socket.emit("main text", "The Next Post Should Be Number");
+    socket.emit("main text", currentStatus);
     socket.emit("current count", currentCount + 1);
     socket.on("disconnect", () => {
         clientsConnected--;
