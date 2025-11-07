@@ -20,6 +20,16 @@ let token = null;
 let currentCountFound = false;
 let clientsConnected = 0;
 
+// Replaces Superscript numbers with ^x
+function digitFromSuperscript(superChar) {
+    var result = "⁰¹²³⁴⁵⁶⁷⁸⁹".indexOf(superChar);
+    if (result > -1) {
+        return "^" + result;
+    } else {
+        return superChar;
+    }
+}
+
 // Replaces common math symbols with ones mathjs can parse
 function replaceSymbols(str) {
     let finalStr = str;
@@ -27,6 +37,7 @@ function replaceSymbols(str) {
     finalStr = finalStr.replaceAll(/x|×|⋅/g, "*");
     // replace division
     finalStr = finalStr.replaceAll("÷", "/");
+    finalStr = finalStr.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g, digitFromSuperscript);
     return finalStr;
 }
 
@@ -154,10 +165,23 @@ io.on("connection", (socket) => {
     clientsConnected++;
     console.log("New client connected. Total: " + clientsConnected);
     socket.emit("main text", currentStatus);
-    socket.emit("current count", (currentStatus.charAt(0) != "T") ? currentCount : currentCount + 1);
+    socket.emit("current count", currentStatus.charAt(0) != "T" ? currentCount : currentCount + 1);
     socket.on("disconnect", () => {
         clientsConnected--;
         console.log("Client disconnected. Total: " + clientsConnected);
+    });
+    socket.on("math check", (msg) => {
+        let res = false;
+        try {
+            res = evaluate(replaceSymbols(msg));
+        } catch {
+            socket.emit(
+                "math result",
+                "The counter failed to evaluate your math. Try standard JavaScript operation symbols."
+            );
+            return;
+        }
+        socket.emit("math result", "Result: " + res);
     });
 });
 

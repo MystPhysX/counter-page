@@ -1,7 +1,3 @@
-html, body {
-    height: 100%;
-}
-
 body {
     font-family: Arial, Helvetica, sans-serif;
     margin: 0;
@@ -31,4 +27,18 @@ body {
 #title {
     font-size: 1em;
     margin-bottom: 2em;
+}
+
+.subscript {
+    margin-bottom: 1em;
+}
+
+label {
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}
+
+button,
+input {
+    margin-bottom: 0.5em;
 }

@@ -9,7 +9,14 @@
             <div id="title">/r/CountWithEveryone Counter</div>
             <div id="mainText">Waiting for server response...</div>
             <div id="numberText">Waiting for server response...</div>
-            <div id="subscript">This page only counts the last 25 posts and is still under development. Please double check the number based on /r/CountWithEveryone/new</div>
+            <div class="subscript">
+                This page only counts the last 25 posts and is still under development. Please double check the number based on /r/CountWithEveryone/new
+            </div>
+            <div class="subscript">Want to check your math? Try the input below.</div>
+            <label for="mathCheck">Check Your Math</label>
+            <input type="text" id="mathCheck" name="mathCheck" />
+            <button id="mathButton">Check</button>
+            <div id="mathResult" class="subscript"></div>
         </div>
         <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
         <script>
@@ -17,12 +24,24 @@
 
             const header = document.getElementById("mainText");
             const number = document.getElementById("numberText");
+            const mathInput = document.getElementById("mathCheck");
+            const mathButton = document.getElementById("mathButton");
+            const mathResult = document.getElementById("mathResult");
+
+            mathButton.onclick = function () {
+                if (mathInput.value) {
+                    socket.emit("math check", mathInput.value);
+                }
+            };
 
             socket.on("main text", (msg) => {
                 header.innerText = msg;
             });
             socket.on("current count", (msg) => {
                 number.innerText = msg;
+            });
+            socket.on("math result", (msg) => {
+                mathResult.innerHTML = msg;
             });
         </script>
     </body>
