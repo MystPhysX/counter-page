@@ -68,11 +68,41 @@ function checkNumber(count) {
     }
 }
 
+// oAuth to fetch a token needed for all API accesses
+async function fetchToken() {
+    const response = await fetch("https://www.reddit.com/api/v1/access_token", {
+        method: "POST",
+        body: new URLSearchParams({
+            grant_type: "password",
+            username: config.reddit.usr,
+            password: config.reddit.pwd,
+        }),
+        headers: {
+            "User-Agent": "CountWithEveryoneCounter/0.1 (by /u/redskyitm)",
+            Authorization: "Basic " + btoa(config.reddit.clientID + ":" + config.reddit.clientSecret),
+        },
+    });
+
+    const data = await response.json();
+
+    if (response.status == 200) {
+        // Got our token
+        token = data["access_token"];
+        console.log("Access Token Set");
+    } else {
+        // Didn't get a token
+        console.log("Failed to get Access Token. Please restart.");
+        return;
+    }
+}
+
 // Parse through the latest 25 posts to see if there's a sequence break
 async function count() {
-    // No token, return without doing anything
+    // No token, get one
     if (token == null) {
-        console.log("Token Not Set");
+        console.log("Getting new token.");
+        await fetchToken();
+        count();
         return;
     }
     // Fetch 25 last posts
@@ -118,44 +148,20 @@ async function count() {
         currentStatus = "The Next Post Should Be Number";
         io.emit("main text", currentStatus);
         io.emit("current count", currentCount + 1);
-    }
-}
-
-// oAuth to fetch a token needed for all API accesses
-async function fetchToken() {
-    const response = await fetch("https://www.reddit.com/api/v1/access_token", {
-        method: "POST",
-        body: new URLSearchParams({
-            grant_type: "password",
-            username: config.reddit.usr,
-            password: config.reddit.pwd,
-        }),
-        headers: {
-            "User-Agent": "CountWithEveryoneCounter/0.1 (by /u/redskyitm)",
-            Authorization: "Basic " + btoa(config.reddit.clientID + ":" + config.reddit.clientSecret),
-        },
-    });
-
-    const data = await response.json();
-
-    if (response.status == 200) {
-        // Got our token
-        token = data["access_token"];
-        console.log("Access Token Set");
-        // Call for a count
-        count();
-        // Set up the repeating count
-        if (interval == null) {
-            interval = setInterval(count, config.app.updateInterval * 1000);
-        }
     } else {
-        // Didn't get a token
-        console.log("Failed to get Access Token. Please restart.");
+        let invalidToken = response.headers.get("www-authenticate");
+        if (invalidToken && invalidToken.includes("invalid_token")) {
+            token = null;
+            count();
+            return;
+        }
     }
 }
 
-// Get token as part of startup.
-fetchToken();
+// Start our count
+count();
+// Set up the repeating count
+interval = setInterval(count, config.app.updateInterval * 1000);
 
 // Default route is to our counter html page
 app.use("/", express.static("./static", { index: "counter.html" }));
@@ -175,10 +181,7 @@ io.on("connection", (socket) => {
         try {
             res = evaluate(replaceSymbols(msg));
         } catch {
-            socket.emit(
-                "math result",
-                "The counter failed to evaluate your math. Try standard JavaScript operation symbols."
-            );
+            socket.emit("math result", "The counter failed to evaluate your math. Try standard JavaScript operation symbols.");
             return;
         }
         socket.emit("math result", "Result: " + res);
