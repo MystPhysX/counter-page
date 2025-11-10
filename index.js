@@ -5,7 +5,7 @@ const express = require("express");
 const fs = require("fs");
 const { createServer } = require("node:http");
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
-const { evaluate } = require("mathjs");
+const { evaluate, combinations } = require("mathjs");
 
 // Setup the app, server, and sockets
 const app = express();
@@ -39,6 +39,21 @@ function replaceSymbols(str) {
     finalStr = finalStr.replaceAll("÷", "/");
     finalStr = finalStr.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g, digitFromSuperscript);
     return finalStr;
+}
+
+function mathEvaluation(str) {
+    let res = false;
+    if (str.includes("choose")) {
+        let list = str.match(/\d+/g);
+        res = combinations(parseInt(list[0]), parseInt(list[1]));
+    } else {
+        try {
+            res = evaluate(replaceSymbols(str));
+        } catch {
+            res = false;
+        }
+    }
+    return res;
 }
 
 // Function that logs and broadcasts if a sequence break was found
@@ -127,21 +142,20 @@ async function count() {
                 if (!checkNumber(posts[i].data.title)) return;
             } else {
                 // Post title is either math or text. Check math first.
-                let res = false;
-                try {
-                    res = evaluate(replaceSymbols(posts[i].data.title));
-                } catch {
+                let res = mathEvaluation(posts[i].data.title);
+                if (res) {
+                    if (!Number.isInteger(res)) {
+                        // Post title was not valid math and is probably text.
+                        sequenceBreakFound("Potential Break After The Post Number Below. The Next Post Is Either Text Or Incorrect Math.");
+                        return;
+                    }
+                    // Valid math found, check it.
+                    if (!checkNumber(res)) return;
+                } else {
                     console.error("Could not evaluate string: " + posts[i].data.title);
                     sequenceBreakFound("Potential Break After The Post Number Below. The Next Post Is Either Text Or Incorrect Math.");
                     return;
                 }
-                if (!Number.isInteger(res)) {
-                    // Post title was not valid math and is probably text.
-                    sequenceBreakFound("Potential Break After The Post Number Below. The Next Post Is Either Text Or Incorrect Math.");
-                    return;
-                }
-                // Valid math found, check it.
-                if (!checkNumber(res)) return;
             }
         }
         // Everything checked out so we can broadcast the current count and continue in peace.
@@ -177,14 +191,13 @@ io.on("connection", (socket) => {
         console.log("Client disconnected. Total: " + clientsConnected);
     });
     socket.on("math check", (msg) => {
-        let res = false;
-        try {
-            res = evaluate(replaceSymbols(msg));
-        } catch {
+        let res = mathEvaluation(msg);
+        if (res) {
+            socket.emit("math result", "Result: " + res);
+        } else {
             socket.emit("math result", "The counter failed to evaluate your math. Try standard JavaScript operation symbols.");
             return;
         }
-        socket.emit("math result", "Result: " + res);
     });
 });
 
