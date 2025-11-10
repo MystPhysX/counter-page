@@ -45,7 +45,11 @@ function mathEvaluation(str) {
     let res = false;
     if (str.includes("choose")) {
         let list = str.match(/\d+/g);
-        res = combinations(parseInt(list[0]), parseInt(list[1]));
+        try {
+            res = combinations(parseInt(list[0]), parseInt(list[1]));
+        } catch {
+            res = false;
+        }
     } else {
         try {
             res = evaluate(replaceSymbols(str));
