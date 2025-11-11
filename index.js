@@ -41,9 +41,11 @@ function replaceSymbols(str) {
     return finalStr;
 }
 
+// Math pre-parser that decides what to do with text
 function mathEvaluation(str) {
     let res = false;
     if (str.includes("choose")) {
+        // if the text has choose, chances are it's combinations
         let list = str.match(/\d+/g);
         try {
             res = combinations(parseInt(list[0]), parseInt(list[1]));
@@ -51,6 +53,7 @@ function mathEvaluation(str) {
             res = false;
         }
     } else {
+        // try to evaluate it using the Mathjs evaluate function
         try {
             res = evaluate(replaceSymbols(str));
         } catch {
@@ -137,6 +140,7 @@ async function count() {
         const data = await response.json();
         const posts = data.data.children;
         currentCountFound = false;
+        currentCount = -1;
         // Iterate backwards through the array (because it's given to us in descending order)
         for (let i = posts.length - 1; i >= 0; i--) {
             // Skip if post is a distinguished post like an announcement
