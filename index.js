@@ -209,9 +209,9 @@ async function count() {
 }
 
 // Start our count
-//count();
+count();
 // Set up the repeating count
-//interval = setInterval(count, config.app.updateInterval * 1000);
+interval = setInterval(count, config.app.updateInterval * 1000);
 
 // Default route is to our counter html page
 app.use("/", express.static("./static", { index: "counter.html" }));
