@@ -42,7 +42,8 @@ function digitFromSubscript(superChar) {
 
 // Replaces common math symbols with ones mathjs can parse
 function replaceSymbols(str) {
-    let finalStr = str;
+    // remove spaces
+    let finalStr = str.replaceAll(" ", "");
     // replace multiplication
     finalStr = finalStr.replaceAll(/x|×|⋅/g, "*");
     // replace division
