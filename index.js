@@ -24,7 +24,17 @@ let clientsConnected = 0;
 function digitFromSuperscript(superChar) {
     var result = "⁰¹²³⁴⁵⁶⁷⁸⁹".indexOf(superChar);
     if (result > -1) {
-        return "^" + result;
+        return result;
+    } else {
+        return superChar;
+    }
+}
+
+// Returns a standard int for a subscript number
+function digitFromSubscript(superChar) {
+    var result = "₀₁₂₃₄₅₆₇₈₉".indexOf(superChar);
+    if (result > -1) {
+        return result;
     } else {
         return superChar;
     }
@@ -37,19 +47,33 @@ function replaceSymbols(str) {
     finalStr = finalStr.replaceAll(/x|×|⋅/g, "*");
     // replace division
     finalStr = finalStr.replaceAll("÷", "/");
-    finalStr = finalStr.replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g, digitFromSuperscript);
+    // replace superscript
+    let superFound = finalStr.search(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g);
+    if (superFound != -1) {
+        finalStr = [finalStr.slice(0, superFound), "^", finalStr.slice(superFound)].join('');
+    }
+    finalStr = finalStr.replaceAll(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g, digitFromSuperscript);
     return finalStr;
 }
 
 // Math pre-parser that decides what to do with text
 function mathEvaluation(str) {
     let res = false;
+    let subsFound = str.search(/[₀₁₂₃₄₅₆₇₈₉]/g);
     if (str.includes("choose")) {
         // if the text has choose, chances are it's combinations
         let list = str.match(/\d+/g);
         try {
             res = combinations(parseInt(list[0]), parseInt(list[1]));
         } catch {
+            res = false;
+        }
+    } else if (subsFound != -1) {
+        // found subscript so we can try changing base
+        let subBase = str.slice(subsFound);
+        subBase = subBase.replaceAll(/[₀₁₂₃₄₅₆₇₈₉]/g, digitFromSubscript);
+        res = parseInt(str.slice(0, subsFound), subBase);
+        if (res == NaN) {
             res = false;
         }
     } else {
