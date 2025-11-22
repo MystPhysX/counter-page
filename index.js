@@ -45,6 +45,8 @@ function replaceSymbols(str) {
     // remove spaces
     let finalStr = str.replaceAll(" ", "");
     finalStr = finalStr.replaceAll(" ", "");
+    // replace subtraction
+    finalStr = finalStr.replaceAll("−", "-");
     // replace multiplication
     finalStr = finalStr.replaceAll(/x|×|⋅/g, "*");
     // replace division
@@ -207,9 +209,9 @@ async function count() {
 }
 
 // Start our count
-count();
+//count();
 // Set up the repeating count
-interval = setInterval(count, config.app.updateInterval * 1000);
+//interval = setInterval(count, config.app.updateInterval * 1000);
 
 // Default route is to our counter html page
 app.use("/", express.static("./static", { index: "counter.html" }));
